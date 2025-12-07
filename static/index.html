@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Plant Care Dashboard</title>
+</head>
+<body>
+    <h1>Plant Care Dashboard</h1>
+    <p>Your API is running successfully!</p>
+
+    <!-- Add Plant Form -->
+    <h2>Add a Plant</h2>
+    <label>
+        Name:
+        <input id="plantName" placeholder="Front Hedge">
+    </label><br><br>
+    <label>
+        Species:
+        <input id="plantSpecies" placeholder="Hibiscus">
+    </label><br><br>
+    <label>
+        Location:
+        <input id="plantLocation" placeholder="Front yard">
+    </label><br><br>
+    <button onclick="createPlant()">Add Plant</button>
+
+    <h3>Last created plant:</h3>
+    <pre id="createResult">(none yet)</pre>
+
+    <hr>
+
+    <!-- Plant List -->
+    <button onclick="loadPlants()">Load All Plants</button>
+
+    <h2>Plants:</h2>
+    <div id="plantList">Click the button to load plants...</div>
+
+    <script>
+        const API_BASE = "http://127.0.0.1:8000";
+
+        async function loadPlants() {
+            try {
+                const response = await fetch(API_BASE + "/plants");
+                const plants = await response.json();
+
+                if (!Array.isArray(plants)) {
+                    document.getElementById("plantList").textContent =
+                        "Unexpected data from server.";
+                    return;
+                }
+
+                if (plants.length === 0) {
+                    document.getElementById("plantList").textContent =
+                        "No plants found.";
+                    return;
+                }
+
+                let html = "";
+
+                plants.forEach(p => {
+                    html += `
+                        <div>
+                            <strong>${p.id}. ${p.name}</strong> (${p.species}) - ${p.location || "no location"}
+                            <button onclick="deletePlant(${p.id})">Delete</button>
+                        </div>
+                        <br>
+                    `;
+                });
+
+                document.getElementById("plantList").innerHTML = html;
+
+            } catch (error) {
+                document.getElementById("plantList").textContent =
+                    "Error loading plants.";
+            }
+        }
+
+        async function deletePlant(id) {
+            try {
+                await fetch(API_BASE + "/plants/" + id, {
+                    method: "DELETE"
+                });
+                loadPlants(); // refresh list after deletion
+            } catch (error) {
+                alert("Error deleting plant.");
+            }
+        }
+
+        async function createPlant() {
+            const name = document.getElementById("plantName").value;
+            const species = document.getElementById("plantSpecies").value;
+            const location = document.getElementById("plantLocation").value;
+
+            const payload = {
+                name: name,
+                species: species,
+                location: location || null
+            };
+
+            try {
+                const response = await fetch(API_BASE + "/plants", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+                document.getElementById("createResult").textContent =
+                    JSON.stringify(data, null, 2);
+
+                // refresh the list after adding
+                loadPlants();
+            } catch (error) {
+                document.getElementById("createResult").textContent =
+                    "Error creating plant.";
+            }
+        }
+
+        // Load plants automatically when the page opens
+        window.onload = loadPlants;
+    </script>
+
+</body>
+</html>

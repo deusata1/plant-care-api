@@ -1,0 +1,17 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "Plant Care Assistant",
+  "name_for_model": "plant_care_assistant",
+  "description_for_human": "Manage your plants in a simple tracker: list all plants, add new ones, and delete plants by ID.",
+  "description_for_model": "Plugin for managing plants. It can list all plants, create a new plant with name, species, and location, and delete a plant by ID. Use it to help the user keep track of their plants.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://aerobiologic-denae-unbroken.ngrok-free.dev/openapi.json"
+  },
+  "logo_url": "https://aerobiologic-denae-unbroken.ngrok-free.dev/.well-known/logo.png",
+  "contact_email": "youremail@example.com",
+  "legal_info_url": "https://aerobiologic-denae-unbroken.ngrok-free.dev/legal"
+}

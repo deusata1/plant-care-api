@@ -1,207 +1,156 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse, PlainTextResponse
 from pydantic import BaseModel
-from typing import Optional, List, Dict
-from datetime import datetime
+from typing import List, Optional
 
-app = FastAPI(title="Plant Care API")
+# ============================================================
+# Config
+# ============================================================
 
-# ---------- Models ----------
+# ⬅️ UPDATE THIS whenever ngrok gives you a new URL
+NGROK_URL = "https://aerobiologic-denae-unbroken.ngrok-free.dev"
 
-class LocationCreate(BaseModel):
+app = FastAPI(
+    title="Plant Care Assistant",
+    description=(
+        "Manage your plants in a simple tracker: list all plants, "
+        "add new ones, and delete plants by ID."
+    ),
+    version="1.0.0",
+    # This fixes the “Could not find a valid URL in `servers`” error
+    servers=[
+        {
+            "url": NGROK_URL,
+            "description": "Ngrok tunnel for local development",
+        }
+    ],
+)
+
+# Allow ChatGPT (and browsers) to call your API
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],        # for dev; you can lock this down later
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# ============================================================
+# Models
+# ============================================================
+
+class PlantBase(BaseModel):
     name: str
-    soil_type: Optional[str] = None
-    drainage: Optional[str] = None
-    default_sun_exposure: Optional[str] = None
+    species: str
+    location: Optional[str] = None
 
-class Location(LocationCreate):
+
+class Plant(PlantBase):
     id: int
 
-class PlantCreate(BaseModel):
-    name: str
-    species: Optional[str] = None
-    location_id: int
-    sun_exposure: Optional[str] = None  # full_sun, partial_shade, shade
-    watering_preference: Optional[str] = None  # low, medium, high
-    soil_preference: Optional[str] = None  # for example slightly_acidic
-    notes: Optional[str] = None
 
-class Plant(PlantCreate):
-    id: int
-    planting_date: datetime
+# ============================================================
+# Simple in-memory "database"
+# ============================================================
 
-class ReadingCreate(BaseModel):
-    plant_id: int
-    soil_moisture: Optional[float] = None  # 0-100
-    soil_ph: Optional[float] = None
-    temperature: Optional[float] = None
-    humidity: Optional[float] = None
-    light_level: Optional[float] = None
+plants_db: List[Plant] = []
+_next_id: int = 1
 
-class Reading(ReadingCreate):
-    id: int
-    timestamp: datetime
 
-class Recommendation(BaseModel):
-    plant_id: int
-    created_at: datetime
-    messages: List[str]
+def get_next_id() -> int:
+    global _next_id
+    curr = _next_id
+    _next_id += 1
+    return curr
 
-# ---------- In-memory "database" ----------
 
-locations: Dict[int, Location] = {}
-plants: Dict[int, Plant] = {}
-readings: Dict[int, Reading] = {}
+# ============================================================
+# Helper / plugin metadata endpoints
+# ============================================================
 
-location_id_counter = 1
-plant_id_counter = 1
-reading_id_counter = 1
-
-# ---------- Helper: recommendation engine ----------
-
-def generate_recommendations(plant: Plant, latest_reading: Optional[Reading]) -> List[str]:
-    if latest_reading is None:
-        return ["No readings yet. Add a soil reading to get recommendations."]
-
-    msgs: List[str] = []
-
-    # 1. Moisture
-    if latest_reading.soil_moisture is not None and plant.watering_preference is not None:
-        m = latest_reading.soil_moisture
-        wp = plant.watering_preference
-
-        if wp == "low":
-            low, high = 10, 40
-        elif wp == "medium":
-            low, high = 30, 60
-        elif wp == "high":
-            low, high = 50, 80
-        else:
-            low, high = 30, 60
-
-        if m < low:
-            msgs.append(f"Soil moisture is {m:.1f}% which is dry for this plant. Water soon.")
-        elif m > high:
-            msgs.append(
-                f"Soil moisture is {m:.1f}% which is high for this plant. "
-                "Risk of overwatering; hold off on watering and check drainage."
-            )
-        else:
-            msgs.append(f"Soil moisture ({m:.1f}%) is within a healthy range for this plant.")
-
-    # 2. pH (simple generic rule)
-    if latest_reading.soil_ph is not None:
-        ph = latest_reading.soil_ph
-        if plant.soil_preference and "acid" in plant.soil_preference.lower():
-            ideal_low, ideal_high = 5.5, 6.5
-        else:
-            ideal_low, ideal_high = 6.0, 7.5
-
-        if ph < ideal_low:
-            msgs.append(
-                f"Soil pH {ph:.1f} is low (acidic). "
-                "Consider adding lime or mixing in less acidic soil."
-            )
-        elif ph > ideal_high:
-            msgs.append(
-                f"Soil pH {ph:.1f} is high (alkaline). "
-                "Consider adding soil acidifier such as sulfur or organic matter like peat moss."
-            )
-        else:
-            msgs.append(f"Soil pH ({ph:.1f}) is within a reasonable range.")
-
-    if not msgs:
-        msgs.append("No specific issues detected with the latest reading.")
-
-    return msgs
-
-# ---------- Routes ----------
-
-@app.get("/")
+@app.get("/", include_in_schema=False)
 def root():
-    return {"message": "Plant Care API is running."}
+    return {"status": "ok", "message": "Plant Care Assistant API is running."}
 
-# Locations
-@app.post("/locations", response_model=Location)
-def create_location(loc: LocationCreate):
-    global location_id_counter
-    location = Location(id=location_id_counter, **loc.dict())
-    locations[location_id_counter] = location
-    location_id_counter += 1
-    return location
 
-@app.get("/locations", response_model=List[Location])
-def list_locations():
-    return list(locations.values())
-
-@app.get("/locations/{location_id}", response_model=Location)
-def get_location(location_id: int):
-    if location_id not in locations:
-        raise HTTPException(status_code=404, detail="Location not found")
-    return locations[location_id]
-
-# Plants
-@app.post("/plants", response_model=Plant)
-def create_plant(p: PlantCreate):
-    global plant_id_counter
-    if p.location_id not in locations:
-        raise HTTPException(status_code=400, detail="location_id does not exist")
-
-    plant = Plant(
-        id=plant_id_counter,
-        planting_date=datetime.utcnow(),
-        **p.dict()
+@app.get("/.well-known/ai-plugin.json", include_in_schema=False)
+def get_manifest():
+    """
+    Serves the plugin manifest for ChatGPT / Actions.
+    Make sure the file .well-known/ai-plugin.json exists next to main.py.
+    """
+    return FileResponse(
+        ".well-known/ai-plugin.json",
+        media_type="application/json",
     )
-    plants[plant_id_counter] = plant
-    plant_id_counter += 1
-    return plant
+
+
+@app.get("/.well-known/logo.png", include_in_schema=False)
+def get_logo():
+    """
+    Serves the logo file referenced in logo_url in ai-plugin.json.
+    Place logo.png inside the .well-known folder.
+    """
+    return FileResponse(
+        ".well-known/logo.png",
+        media_type="image/png",
+    )
+
+
+@app.get("/legal", response_class=PlainTextResponse, include_in_schema=False)
+def legal():
+    """
+    Simple legal / terms endpoint referenced in the manifest.
+    """
+    return (
+        "Plant Care Assistant\n"
+        "This tool is for demonstration and educational purposes only. "
+        "It does not replace professional horticultural advice."
+    )
+
+
+# ============================================================
+# Plant CRUD endpoints (used by the plugin)
+# ============================================================
 
 @app.get("/plants", response_model=List[Plant])
 def list_plants():
-    return list(plants.values())
+    """
+    List all stored plants.
+    """
+    return plants_db
+
+
+@app.post("/plants", response_model=Plant)
+def create_plant(plant: PlantBase):
+    """
+    Create a new plant with name, species, and optional location.
+    """
+    new_plant = Plant(id=get_next_id(), **plant.dict())
+    plants_db.append(new_plant)
+    return new_plant
+
 
 @app.get("/plants/{plant_id}", response_model=Plant)
 def get_plant(plant_id: int):
-    if plant_id not in plants:
-        raise HTTPException(status_code=404, detail="Plant not found")
-    return plants[plant_id]
+    """
+    Get a plant by its ID.
+    """
+    for p in plants_db:
+        if p.id == plant_id:
+            return p
+    raise HTTPException(status_code=404, detail="Plant not found")
 
-# Readings
-@app.post("/readings", response_model=Reading)
-def create_reading(r: ReadingCreate):
-    global reading_id_counter
-    if r.plant_id not in plants:
-        raise HTTPException(status_code=400, detail="plant_id does not exist")
 
-    reading = Reading(
-        id=reading_id_counter,
-        timestamp=datetime.utcnow(),
-        **r.dict()
-    )
-    readings[reading_id_counter] = reading
-    reading_id_counter += 1
-    return reading
-
-@app.get("/plants/{plant_id}/readings", response_model=List[Reading])
-def list_readings_for_plant(plant_id: int):
-    if plant_id not in plants:
-        raise HTTPException(status_code=404, detail="Plant not found")
-    return [r for r in readings.values() if r.plant_id == plant_id]
-
-# Recommendations
-@app.get("/plants/{plant_id}/recommendations", response_model=Recommendation)
-def get_recommendations(plant_id: int):
-    if plant_id not in plants:
-        raise HTTPException(status_code=404, detail="Plant not found")
-
-    plant = plants[plant_id]
-
-    # Find latest reading for this plant
-    plant_readings = [r for r in readings.values() if r.plant_id == plant_id]
-    latest = max(plant_readings, key=lambda r: r.timestamp) if plant_readings else None
-
-    messages = generate_recommendations(plant, latest)
-    return Recommendation(
-        plant_id=plant_id,
-        created_at=datetime.utcnow(),
-        messages=messages
-    )
+@app.delete("/plants/{plant_id}", response_model=dict)
+def delete_plant(plant_id: int):
+    """
+    Delete a plant by its ID.
+    """
+    global plants_db
+    for index, p in enumerate(plants_db):
+        if p.id == plant_id:
+            plants_db.pop(index)
+            return {"message": f"Plant {plant_id} deleted."}
+    raise HTTPException(status_code=404, detail="Plant not found")
