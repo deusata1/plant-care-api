@@ -16,44 +16,43 @@
 
 <br>
 
-# Plant Care Assistant API
+Plant Care Assistant API
 
 The Plant Care Assistant API is a FastAPI-based backend designed to manage plants, track soil and environmental readings, and support a natural-language interface through a ChatGPT plugin. It includes a SQLite database, static web interface, and fully documented REST endpoints.
 
 ---
 
-## Features
+Features
 
-- Plant creation, retrieval, and deletion
-- Soil and environmental metric tracking (moisture, pH, temperature, humidity, sunlight)
-- REST API with automatically generated documentation (`/docs`)
-- ChatGPT plugin support via `.well-known/ai-plugin.json`
-- SQLite database for local persistence
-- Static frontend served from the `/static` directory
+- Plant creation, retrieval, and deletion  
+- Soil and environmental metric tracking (moisture, pH, temperature, humidity, sunlight)  
+- REST API with automatically generated documentation (`/docs`)  
+- ChatGPT plugin support via `.well-known/ai-plugin.json`  
+- SQLite database for local persistence  
+- Static frontend served from the `/static` directory  
 - CORS enabled for browser and plugin compatibility
-
----
 
 ## Screenshots
 
-### API Root Status Page
+API Root Status Page
+
 <p align="center">
   <img src="https://raw.githubusercontent.com/deusata1/plant-care-api/main/static.png" width="700">
 </p>
 
-### ChatGPT Plugin Manifest Page
+ChatGPT Plugin Manifest Page
+
 <p align="center">
   <img src="https://raw.githubusercontent.com/deusata1/plant-care-api/main/plugin.png" width="700">
 </p>
 
-### FastAPI Documentation (Swagger UI)
+FastAPI Documentation (Swagger UI)
+
 <p align="center">
   <img src="https://raw.githubusercontent.com/deusata1/plant-care-api/main/fast%20api.png" width="700">
 </p>
 
----
-
-## Technologies Used
+Technologies Used
 
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3.10+-blue.svg" alt="Python">
@@ -72,17 +71,85 @@ The Plant Care Assistant API is a FastAPI-based backend designed to manage plant
   <img src="https://img.shields.io/badge/ChatGPT%20Plugin-Enabled-blue.svg" alt="ChatGPT Plugin">
 </p>
 
+Project Structure
+
+    main.py                            # FastAPI application
+    plantcare.db                       # SQLite database
+    seed_plants.py                     # Database seeding script
+    requirements.txt                   # Python dependencies
+    .gitignore
+    index.html                         # Example HTML interface
+    static/ # Static assets (CSS/JS)
+    .well-known/
+        ai-plugin.json                 # ChatGPT plugin manifest
+
+Installation and Setup
+
+1. Clone the Repository
+
+    git clone https://github.com/deusata1/plant-care-api.git
+    cd plant-care-api
+
+2. Install Dependencies
+
+   pip install -r requirements.txt
+
+3. Run the FastAPI Server
+
+  uvicorn main:app --reload
+
+  API Available At:
+
+      http://localhost:8000
+      http://localhost:8000/docs
+      http://localhost:8000/redoc
+      http://localhost:8000/
+
+API Endpoints
+
+Plant Endpoints
+
+| Method | Endpoint       | Description           |
+| ------ | -------------- | --------------------- |
+| GET    | `/plants`      | List all plants       |
+| POST   | `/plants`      | Add a new plant       |
+| GET    | `/plants/{id}` | Get plant details     |
+| DELETE | `/plants/{id}` | Delete a plant        |
+
+Soil Rendering Endpoints
+
+| Method | Endpoint                | Description                      |
+| ------ | ----------------------- | -------------------------------- |
+| GET    | `/plants/{id}/readings` | List readings for a plant        |
+| POST   | `/plants/{id}/readings` | Add new soil/environment reading |
+
+ChatGPT Plugin Integration
+
+This repository includes a fully functional ChatGPT plugin located at:
+
+      /.well-known/ai-plugin.json
+
+FastAPI automatically exposes the OpenAI specification, enabling ChatGPT to:
+
+      Add and Manage Plants
+      Query Plant Health
+      Retrieve Readings
+      Provided Automated Care Recommendations
+
+Database Seeding (Optional)
+
+    python seed_plants.py
+
+License
+
+This project is licensed under the MIT License.
+See the LICENSE file for details.
+
+Credits
+
+Developed by Thomas A. Deusa as part of a full-stack project integrating Python, FastAPI, and ChatGPT Plugins.
+
+
+
+
 ---
-
-## Project Structure
-
-```text
-main.py                  # FastAPI application
-plantcare.db             # SQLite database
-seed_plants.py           # Database seeding script
-requirements.txt         # Python dependencies
-.gitignore
-index.html               # Example HTML interface
-static/                  # Static assets (CSS/JS)
-.well-known/
-    ai-plugin.json       # ChatGPT plugin manifest
