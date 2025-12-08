@@ -1,3 +1,10 @@
+[![Python Version](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.110+-009688.svg)](https://fastapi.tiangolo.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![OpenAPI](https://img.shields.io/badge/OpenAPI-Auto--Generated-lightgrey.svg)](http://localhost:8000/docs)
+[![Status](https://img.shields.io/badge/Status-Active-brightgreen.svg)]()
+
+
 Plant Care Assistant API
 
 The Plant Care Assistant API is a FastAPI-based backend designed to manage plants, track soil and environmental readings, and support a natural-language interface through a ChatGPT plugin. It includes a SQLite database, static web interface, and fully documented REST endpoints.
