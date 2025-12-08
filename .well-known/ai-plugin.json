@@ -9,9 +9,9 @@
   },
   "api": {
     "type": "openapi",
-    "url": "https://aerobiologic-denae-unbroken.ngrok-free.dev/openapi.json"
+    "url": "https://plant-care-api-slmt.onrender.com/openapi.json"
   },
-  "logo_url": "https://aerobiologic-denae-unbroken.ngrok-free.dev/.well-known/logo.png",
-  "contact_email": "youremail@example.com",
-  "legal_info_url": "https://aerobiologic-denae-unbroken.ngrok-free.dev/legal"
+  "logo_url": "https://plant-care-api-slmt.onrender.com/.well-known/logo.png",
+  "contact_email": "your_email@example.com",
+  "legal_info_url": "https://plant-care-api-slmt.onrender.com/legal"
 }
