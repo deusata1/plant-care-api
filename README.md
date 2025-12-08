@@ -33,6 +33,12 @@ Features
 
 Screenshots
 
+## Screenshots
+
+### API Root Status Page
+<p align="center">
+  <img src="https://raw.githubusercontent.com/deusata1/plant-care-api/main/static.png" width="700">
+</p>
 
 
   Project Structure
