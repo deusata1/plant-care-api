@@ -31,6 +31,10 @@ Features
   Static frontend served from the /static directory
   CORS enabled for browser and plugin compatibility
 
+Screenshots
+
+
+
   Project Structure
 
       main.py                  #FastAPI application
