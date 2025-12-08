@@ -96,7 +96,7 @@ Installation and Setup
 
 3. Run the FastAPI Server
 
-  uvicorn main:app --reload
+   uvicorn main:app --reload
 
   API Available At:
 
