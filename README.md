@@ -14,16 +14,15 @@ Features
 
   Project Structure
 
-  plant-care-api/
-│── main.py                # FastAPI application
-│── plantcare.db           # SQLite database
-│── seed_plants.py         # Database seeding script
-│── requirements.txt       # Python dependencies
-│── .gitignore
-│── index.html             # Example HTML interface
-│── static/                # Static assets (CSS/JS)
-│── .well-known/
-│     └── ai-plugin.json   # ChatGPT plugin manifest
+      main.py                  #FastAPI application
+      plantcare.db             #SQLite database
+      seed_plants.py           #Database seeding script
+      requirements.txt         #Python dependencies
+      .gitignore
+      index.html               #Example HTML interface
+      static/                  #Static assets (CSS/JS)
+      .well-known/
+          ai-plugin.json       #ChatGPT plugin manifest
 
 Installation and Set Up
 
