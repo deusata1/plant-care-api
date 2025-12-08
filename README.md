@@ -122,11 +122,23 @@ Database Seeding (Optional)
 
 Technologies Used:
 
-    FastAPI
-    Uvicorn
-    Pydantic
-    SQLite
-    HTML, CSS, JavaScript
+## Technologies Used
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.10+-blue.svg" alt="Python">
+  <img src="https://img.shields.io/badge/FastAPI-Framework-009688.svg" alt="FastAPI">
+  <img src="https://img.shields.io/badge/Uvicorn-ASGI%20Server-orange.svg" alt="Uvicorn">
+  <img src="https://img.shields.io/badge/Pydantic-Data%20Validation-green.svg" alt="Pydantic">
+  <img src="https://img.shields.io/badge/SQLite-Database-lightgrey.svg" alt="SQLite">
+  <img src="https://img.shields.io/badge/HTML-Frontend-red.svg" alt="HTML">
+  <img src="https://img.shields.io/badge/CSS-Styling-blueviolet.svg" alt="CSS">
+  <img src="https://img.shields.io/badge/JavaScript-Scripting-yellow.svg" alt="JavaScript">
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/FastAPI%20Docs-Swagger%20UI-green.svg" alt="Swagger UI">
+  <img src="https://img.shields.io/badge/OpenAPI-Automatic%20Documentation-lightgrey.svg" alt="OpenAPI">
+  <img src="https://img.shields.io/badge/ChatGPT%20Plugin-E
 
 License
 
