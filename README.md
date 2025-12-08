@@ -45,6 +45,11 @@ Screenshots
   <img src="https://raw.githubusercontent.com/deusata1/plant-care-api/main/plugin.png" width="700">
 </p>
 
+### FastAPI Documentation (Swagger UI)
+<p align="center">
+  <img src="https://raw.githubusercontent.com/deusata1/plant-care-api/main/fast%20api.png" width="700">
+</p>
+
   Project Structure
 
       main.py                  #FastAPI application
