@@ -1,8 +1,20 @@
-[![Python Version](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.110+-009688.svg)](https://fastapi.tiangolo.com/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![OpenAPI](https://img.shields.io/badge/OpenAPI-Auto--Generated-lightgrey.svg)](http://localhost:8000/docs)
-[![Status](https://img.shields.io/badge/Status-Active-brightgreen.svg)]()
+<p align="center">
+  <a href="https://www.python.org/">
+    <img src="https://img.shields.io/badge/Python-3.10+-blue.svg" alt="Python Version">
+  </a>
+  <a href="https://fastapi.tiangolo.com/">
+    <img src="https://img.shields.io/badge/FastAPI-0.110+-009688.svg" alt="FastAPI">
+  </a>
+  <a href="LICENSE">
+    <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT License">
+  </a>
+  <a href="http://localhost:8000/docs">
+    <img src="https://img.shields.io/badge/OpenAPI-Auto--Generated-lightgrey.svg" alt="OpenAPI Docs">
+  </a>
+  <img src="https://img.shields.io/badge/Status-Active-brightgreen.svg" alt="Project Status">
+</p>
+
+<br>
 
 
 Plant Care Assistant API
